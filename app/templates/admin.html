@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Admin Panel</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="admin-container">
+        <h2>Admin Panel</h2>
+        <div class="game-statistics">
+            <h3>Game Statistics</h3>
+            <p>Active Players: <span id="active-players">0</span></p>
+            <p>Game Status: <span id="game-status">Not Started</span></p>
+            <!-- Add more game statistics as needed -->
+        </div>
+        <!-- Add controls for the admin (e.g., start, pause, end game) here -->
+    </div>
+    <script src="/static/js/admin_script.js"></script> <!-- Update the path as needed -->
+</body>
+</html>

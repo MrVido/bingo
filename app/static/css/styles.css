@@ -1,0 +1,171 @@
+.container {
+    text-align: center; 
+    margin-top: 40px;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 70vh;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    grid-gap: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #e7d5d5;
+    padding: 50px; /* Add padding around the bingo board */
+    border-radius: 30px;
+    margin: 0 auto; /* Center the bingo board horizontally */
+}
+.btnGenerate {
+    background: #3498db;
+    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+    background-image: -o-linear-gradient(top, #3498db, #2980b9);
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    -webkit-border-radius: 30;
+    -moz-border-radius: 30;
+    border-radius: 30px ;
+    text-shadow:4px 1px 0px #3ab013;
+    -webkit-box-shadow: 0px 3px 3px #3ab013;
+    -moz-box-shadow: 0px 6px 5px #3ab013;
+    box-shadow: 0px 2px 5px #5d894e;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 22px;
+    padding: 11px 20px 10px 20px;
+    text-decoration: none;
+    margin-top: 10px; /* Add space from the top */
+    display: flex;
+    justify-content: center; /* Center the child elements horizontally */
+    align-items: center;
+    margin: 0 auto; /* Center the button horizontally */
+}
+
+  
+  .btnGenerate:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+  }
+.header_container {
+    text-align: center;
+    
+}
+.header_container::before {
+    content: ""; /* Required for the pseudo-element */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/baby_shower.webp);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5; /* Adjust the opacity value (0 to 1) */
+    z-index: -1; /* Ensure the pseudo-element is behind other content */
+}
+.header {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 47px;
+    letter-spacing: -1.2px;
+    word-spacing: -3.2px;
+    color: rgb(253, 148, 166);
+    font-weight: 900;
+    text-decoration: none;
+    font-style: normal;
+    font-variant: small-caps;
+    text-transform: none;
+    z-index: 4;
+}
+
+h3 {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 27px;
+    letter-spacing: -1.2px;
+    word-spacing: -3.2px;
+    color: #3CBA84;
+    font-weight: 700;
+    text-decoration: none;
+    font-style: normal;
+    font-variant: small-caps;
+    text-transform: none;
+    z-index: 2;
+}
+.cell {
+    width: 100px;
+    height: 100px;
+    border: 1px solid rgb(94, 60, 60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire cell */
+}
+
+.letter {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-weight: bold;
+    font-size: 16px;
+}
+/* Add styling for the bingo header */
+/* Add styling for the bingo header */
+@keyframes stamp {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.stamped {
+    animation: stamp 0.5s ease-in-out;
+    border: 6px solid red;
+}
+.stamp {
+    position: absolute;
+    width: 88px; /* Adjust size as needed */
+    height: 88px;
+    z-index: 53;
+    border:3px solid rgb(253, 148, 166);
+}
+#username-form {
+    max-width: 400px; /* Limit form width for better aesthetics */
+    margin: 20px auto; /* Center form horizontally and add some space from the top */
+    padding: 20px;
+    background: #f9f9f9; /* Light background to make it stand out */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+#username-form input[type="text"] {
+    width: calc(100% - 22px); /* Full width minus padding */
+    padding: 10px; /* Comfortable padding around text */
+    margin-bottom: 20px; /* Space between input and button */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners for input */
+    box-sizing: border-box; /* Include padding and border in element's width */
+}
+
+#username-form button {
+    width: 100%; /* Match input width */
+    padding: 10px; /* Comfortable padding */
+    border: none; /* Remove border */
+    cursor: pointer; /* Indicate it's clickable */
+    font-weight: bold; /* Make text stand out */
+}
+
+/* Enhance button hover effect */
+#username-form button:hover {
+    background-image: linear-gradient(to bottom, #3cb0fd, #2980b9); /* Slightly lighter shade */
+}
