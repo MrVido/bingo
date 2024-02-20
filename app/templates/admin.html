@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bingo Admin Panel</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <!-- Corrected stylesheet path -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="admin-container">
@@ -13,10 +14,27 @@
             <h3>Game Statistics</h3>
             <p>Active Players: <span id="active-players">0</span></p>
             <p>Game Status: <span id="game-status">Not Started</span></p>
-            <!-- Add more game statistics as needed -->
+            <!-- Additional game statistics as needed -->
         </div>
-        <!-- Add controls for the admin (e.g., start, pause, end game) here -->
     </div>
-    <script src="/static/js/admin_script.js"></script> <!-- Update the path as needed -->
-</body>
-</html>
+    <div>
+        <h1>Admin Dashboard</h1>
+        <div id="user-list"></div>
+        <!-- Button to generate a new session -->
+        <button id="new-session-btn">Generate New Session</button>
+        <!-- Button to start the game, hidden initially and shown when a session is ready to start -->
+        <button id="start-game-btn" style="display: none;">Start Game</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/users')
+                .then(response => response.json())
+                .then(data => {
+                    const userList = document.getElementById('user-list');
+                    userList.innerHTML = '<ul>' + data.users.map(user => `<li>${user}</li>`).join('') + '</ul>';
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+    <!-- Corrected script path -->
+    <script src="{{ url_for('static', filename='js/admin_script

@@ -1,3 +1,5 @@
+let boardSelected = false; // This flag will be true once a board is selected
+
 // Handles form submission to generate and display the bingo board
 document.addEventListener('DOMContentLoaded', function() {
     const usernameForm = document.getElementById('username-form');
@@ -5,6 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     usernameForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        if (boardSelected) {
+            alert("A board has already been selected. Please refresh the page to start over.");
+            return; // Exit the function early if a board is already selected
+        }
         const usernameInput = document.getElementById('username');
         const username = usernameInput.value.trim();
         if (username) {
@@ -18,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 bingoBoard.innerHTML = generateBoardHTML(data.board);
+                boardSelected = true; // Set the flag to true after generating the board
+                document.getElementById('username-form').style.display = 'none';
+                addClickEventToCells(); // Attach click event listeners to cells // Hide or use .remove() to remove the form
             })
             .catch(error => console.error('Error:', error));
         } else {
@@ -48,25 +57,16 @@ function generateBoardHTML(board) {
 
 // Handles the click event on images (assuming this is for marking bingo cells)
 function handleImageClick(event) {
-    const img = event.target;
-    img.classList.toggle('stamped'); // Toggle the stamped class on the clicked image
-
-    // Adjust the static file path as needed
-    let stampElement = document.getElementById('stamp');
-    if (!stampElement) {
-        stampElement = document.createElement('img');
-        stampElement.src = '/static/images/stamp.png'; // Ensure this path is correct
-        stampElement.classList.add('stamp');
-        stampElement.id = 'stamp';
-        stampElement.alt = 'Stamp';
-        document.body.appendChild(stampElement);
-    }
-
-    const imgRect = img.getBoundingClientRect();
-    stampElement.style.top = `${imgRect.top + window.scrollY}px`;
-    stampElement.style.left = `${imgRect.left + window.scrollX}px`;
-    stampElement.style.display = stampElement.style.display === 'none' ? 'block' : 'none';
+    const cell = event.target.closest('.cell'); // Get the closest cell containing the clicked image
+    cell.classList.toggle('stamped'); // Toggle the 'stamped' class on the cell
 }
+// Example of adding click event listeners to each cell after the board is generated
+function addClickEventToCells() {
+    document.querySelectorAll('.cell img').forEach(img => {
+        img.addEventListener('click', handleImageClick);
+    });
+}
+
 
 // Lazy loads images with the 'data-src' attribute
 function lazyLoadImages() {
@@ -92,3 +92,4 @@ function lazyLoadImages() {
 }
 
 document.addEventListener('DOMContentLoaded', lazyLoadImages);
+document.getElementById('submit-btn').disabled = true; // Disable the button

@@ -4,19 +4,15 @@
     display: flex;
     justify-content: center; 
     align-items: center; 
-    height: 70vh;
+    height: 75vh;
+    background-image: url(../images/baby_shower.webp);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.92; /* Adjust the opacity value (0 to 1) */
+    z-index: -1;
 }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(5, 100px);
-    grid-gap: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #e7d5d5;
-    padding: 50px; /* Add padding around the bingo board */
-    border-radius: 30px;
-    margin: 0 auto; /* Center the bingo board horizontally */
-}
+
 .btnGenerate {
     background: #3498db;
     background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
@@ -44,7 +40,7 @@
 }
 
   
-  .btnGenerate:hover {
+.btnGenerate:hover {
     background: #3cb0fd;
     background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
     background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
@@ -53,6 +49,13 @@
     background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
     text-decoration: none;
   }
+
+.btnGenerate.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    display: hidden;
+}
+
 .header_container {
     text-align: center;
     
@@ -97,21 +100,6 @@ h3 {
     text-transform: none;
     z-index: 2;
 }
-.cell {
-    width: 100px;
-    height: 100px;
-    border: 1px solid rgb(94, 60, 60);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.cell img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensure the image covers the entire cell */
-}
 
 .letter {
     position: absolute;
@@ -120,25 +108,8 @@ h3 {
     font-weight: bold;
     font-size: 16px;
 }
-/* Add styling for the bingo header */
-/* Add styling for the bingo header */
-@keyframes stamp {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
 
-.stamped {
-    animation: stamp 0.5s ease-in-out;
-    border: 6px solid red;
-}
-.stamp {
-    position: absolute;
-    width: 88px; /* Adjust size as needed */
-    height: 88px;
-    z-index: 53;
-    border:3px solid rgb(253, 148, 166);
-}
+
 #username-form {
     max-width: 400px; /* Limit form width for better aesthetics */
     margin: 20px auto; /* Center form horizontally and add some space from the top */
@@ -168,4 +139,73 @@ h3 {
 /* Enhance button hover effect */
 #username-form button:hover {
     background-image: linear-gradient(to bottom, #3cb0fd, #2980b9); /* Slightly lighter shade */
+}
+
+.board-grid {
+    display: grid;
+    background-color: #e7d5d5;
+    box-shadow: 0 4px 8px rgba(121, 46, 46, 0.6);
+    grid-template-columns: repeat(5, 100px); /* Creates a 5x5 grid */
+    grid-gap: 5px; /* Adjust based on your preference */
+    justify-content: center; /* Center the grid horizontally */
+    align-items: center;
+    padding: 30px;
+    margin: 0 ; /* Align items vertically */
+    background-image: linear-gradient(to right, #f79999 0%, #fceec1 25%, #fceeb2 50%, #fffdcb 75%, #f1e7b6 100%);
+}
+
+.board-row {
+    display: contents; /* This makes .board-row effectively invisible but allows its children to be part of the grid */
+}
+
+.cell {
+    width: 100px; /* Width of each cell */
+    height: 100px; /* Height of each cell, adjust as needed */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    border: 1px solid rgb(94, 60, 60);
+    overflow: hidden; /* Hide overflow to ensure images don't go over the border */
+    position: relative;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2); /* Adjust as needed */
+    
+}
+.cell:hover {
+    background-color: #f9f9f9; /* Lighten on hover */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3); /* Increase shadow for depth */
+}
+.cell img {
+    width: 100%; /* Ensure image covers the full width of the cell */
+    height: 100%; /* Ensure image covers the full height of the cell */
+
+    object-fit: fill; /* Cover the available cell space, cropping the image if necessary */
+}
+
+@keyframes stamp {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.stamped {
+    animation: stamp 0.5s ease-in-out;
+    border: 6px solid red;
+}
+.stamp {
+    position: absolute;
+    width: 8px; /* Adjust size as needed */
+    height: 8px;
+    z-index: 53;
+    border:3px solid rgb(253, 148, 166);
+}
+.stamped::after {
+    content: url('/static/images/stamp.png'); /* Adjust the path as needed */
+    position: absolute;
+    margin: 2px;
+    top: 48%;
+    left: 10%;
+    transform: translate(50%, -50%); /* Center the stamp */
+    width: 60%; /* Scaled to fit within the cell, considering padding */
+    height: auto; /* Maintain aspect ratio */
+    z-index: 1;
 }

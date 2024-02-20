@@ -1,42 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bingo Game</title>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Game - User Registration</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
     <div class="header_container">
-      <h1 class="header">Steven's Baby Showers Bingo!</h1>
-      <h3>Googling isn't allowed!</h3>
+        <h1 class="header">Steven's Baby Showers Bingo!</h1>
+        <h3>Googling isn't allowed!</h3>
     </div>
     <div class="container">
-      <form id="username-form">
-        <input
-          type="text"
-          id="username"
-          name="username"
-          placeholder="Enter your username"
-        />
-        <button type="submit" class="btnGenerate">Start Game</button>
-      </form>
-    </div>
-    <div class="board">
-      <div id="bingo-board" class="board"></div>
-      <div id="inside-board">
-        <img
-          src="{{ url_for('static', filename='images/stamp.png') }}"
-          class="stamp"
-          id="stamp"
-          alt="Stamp"
-        />
-      </div>
+        <form id="registration-form">
+            <input type="text" id="session-id" name="session_id" placeholder="Enter game session ID" />
+            <input type="text" id="username" name="username" placeholder="Enter your username" />
+            <button type="submit" class="btnRegister">Register</button>
+        </form>
     </div>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-  </body>
+</body>
 </html>
