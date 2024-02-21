@@ -3,6 +3,8 @@ from flask_cors import CORS
 import random
 from flask_sqlalchemy import SQLAlchemy
 import uuid
+import time
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 CORS(app)
@@ -10,10 +12,17 @@ app.secret_key = '123456789'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bingo_game.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
+
+def generate_simple_session_id():
+    timestamp = str(int(time.time()))[-900:]  # Current time in seconds since Epoch
+    random_part = random.randint(10, 99)  # Random 4-digit number
+    session_id = f"{timestamp}{random_part}"
+    return session_id
 
 class GameSession(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    unique_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    unique_id = db.Column(db.String(50), unique=True, nullable=False, default=generate_simple_session_id)
     status = db.Column(db.String(10), default='waiting')
 
 class User(db.Model):
@@ -28,42 +37,103 @@ GameSession.users = db.relationship('User', order_by=User.id, back_populates='se
 with app.app_context():
     db.create_all()
 
+
+
+#ROUTES
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/admin')
+def admin_panel():
+    return render_template('admin.html')
+
 @app.route('/admin/new_session', methods=['POST'])
 def new_session():
-    session = GameSession()
-    db.session.add(session)
+    new_session = GameSession(status='waiting')
+    db.session.add(new_session)
     db.session.commit()
-    return jsonify({'success': True, 'session_id': session.unique_id}), 201
+    return jsonify({'success': True, 'session_id': new_session.unique_id})
 
 
 
 @app.route('/register', methods=['POST'])
 def register_user():
-    username = request.form.get('username')
-    session_id = request.form.get('session_id')
-    
-    game_session = GameSession.query.filter_by(unique_id=session_id).first()
-    if not game_session or game_session.status != 'waiting':
-        return jsonify({'success': False, 'error': 'Invalid or closed session'}), 400
-
-    if username and not User.query.filter_by(username=username, session_id=game_session.id).first():
-        user = User(username=username, session=game_session)
+    session_id = request.form['session_id']
+    username = request.form['username']
+    session = GameSession.query.filter_by(unique_id=session_id).first()
+    if session and session.status == 'waiting':
+        user = User(username=username, session_id=session.id)
         db.session.add(user)
         db.session.commit()
-        return jsonify({'success': True, 'username': username})
+        return jsonify({'success': True, 'message': 'User registered'})
     else:
-        return jsonify({'success': False, 'error': 'Username is taken or invalid'}), 400
+        return jsonify({'success': False, 'error': 'Session not found or registration closed'}), 400
 
+@app.route('/users', methods=['GET'])
+def get_users():
+    # Fetch all users from the database
+    users = User.query.all()
+    # Extract usernames and return them as a list
+    usernames = [user.username for user in users]
+    return jsonify(usernames=usernames)
+    
+    
 @app.route('/admin/start_game', methods=['POST'])
 def start_game():
-    session_id = request.form.get('session_id')
+    session_id = request.json.get('session_id')
     game_session = GameSession.query.filter_by(unique_id=session_id).first()
-    if game_session and game_session.status == 'waiting':
-        game_session.status = 'in_progress'
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Game started'}), 200
+    if game_session:
+        if game_session.status == 'waiting':  # Check if the game is in the waiting state
+            game_session.status = 'in_progress'
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Game started'}), 200
+        else:
+            return jsonify({'success': False, 'error': 'Game has already started or ended'}), 400
+    return jsonify({'success': False, 'error': 'Session not found'}), 404
+
+
+@app.route('/generate_board', methods=['POST'])
+def generate_board():
+    username = request.form.get('username')
+    game = BingoGame()
+    return jsonify({'username': username, 'board': game.board})
+
+@app.route('/admin/game_status', methods=['GET'])
+def game_status():
+    session_id = request.args.get('session_id')  # Or however you choose to identify the session
+    game_session = GameSession.query.filter_by(unique_id=session_id).first()
+    if game_session:
+        users = User.query.filter_by(session_id=game_session.id).all()
+        usernames = [user.username for user in users]
+        return jsonify({
+            'success': True,
+            'game_session': {
+                'id': game_session.id,
+                'unique_id': game_session.unique_id,
+                'status': game_session.status,
+                'active_players': len(users),
+                'usernames': usernames
+            }
+        })
     else:
-        return jsonify({'success': False, 'error': 'Session not found or already started'}), 400
+        return jsonify({'success': False, 'error': 'No game session found'}), 404
+
+
+# Utility function for generating a bingo board
+class BingoGame:
+    def __init__(self):
+        self.board = self.generate_board()
+
+    def generate_board(self):
+        # Generate a 5x5 Bingo board with random items
+        board = []
+        items = random.sample(bingo_items, 25)  # 24 unique items for the board
+        for i in range(0, 25, 5):
+            board.append(items[i:i+5])
+        board[2][2] = 'mainsquare'  
+        return board
 
 
 # List of Bingo images (file names without extension)
@@ -79,32 +149,29 @@ bingo_items = [
     "westham_united"
 ]
 
-class BingoGame:
-    def __init__(self):
-        self.board = self.generate_board()
+# List of called items to keep track of which items have been called
+called_items = []
 
-    def generate_board(self):
-        # Generate a 5x5 Bingo board with random items
-        board = []
-        items = random.sample(bingo_items, 25)  # 24 unique items for the board
-        for i in range(0, 25, 5):
-            board.append(items[i:i+5])
-        board[2][2] = 'mainsquare'  
-        return board
+@socketio.on('start_game')
+def handle_start_game():
+    global called_items
+    called_items = []  # Reset the list at the start of the game
 
+    def select_random_item():
+        if len(called_items) < len(bingo_items):
+            remaining_items = [item for item in bingo_items if item not in called_items]
+            selected_item = random.choice(remaining_items)
+            called_items.append(selected_item)
+            return selected_item
+        return None
 
-    # You can add more methods for game logic, like checking for a win
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/generate_board', methods=['POST'])
-def generate_board():
-    username = request.form.get('username')
-    game = BingoGame()
-    return jsonify({'username': username, 'board': game.board})
-
+    # Example: Call a new item every 10 seconds
+    while len(called_items) < len(bingo_items):
+        selected_item = select_random_item()
+        if selected_item:
+            # Broadcast the selected item to all connected clients
+            emit('new_item', {'item': selected_item}, broadcast=True)
+        socketio.sleep(10)  # Wait for 10 seconds before selecting the next item
 
 if __name__ == '__main__':
     app.run(debug=True)
