@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const newSessionBtn = document.getElementById('new-session-btn');
     const startGameBtn = document.getElementById('start-game-btn');
+    const callItemBtn = document.getElementById('call-item-btn');
+    const endGameBtn = document.getElementById('end-game-btn');
     let currentSessionId = ''; // Initialize without a current session ID
 
     function updateGameStatus() {
@@ -65,6 +67,53 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error starting game:', error));
     });    
+    callItemBtn.addEventListener('click', function() {
+        if (!currentSessionId) {
+            alert("No session ID available. Please start a game session first.");
+            return;
+        }
+        fetch('/call_item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: currentSessionId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(`Item called: ${data.called_item}`);
+                // Append the called item to the list
+                const itemElement = document.createElement('li');
+                itemElement.textContent = data.called_item;
+                document.getElementById('called-items').appendChild(itemElement);
+            } else {
+                alert(`Failed to call item: ${data.error}`);
+            }
+        })
+        .catch(error => console.error('Error calling item:', error));
+    });
+    endGameBtn.addEventListener('click', function() {
+        if (!currentSessionId) {
+            alert('No session ID available. Please start a game session first.');
+            return;
+        }
+
+        fetch('/admin/end_game', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: currentSessionId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Game ended successfully.');
+                // Optionally, update the UI to reflect the game has ended
+            } else {
+                alert(`Failed to end game: ${data.error}`);
+            }
+        })
+        .catch(error => console.error('Error ending game:', error));
+    });
+    
 });
 
 

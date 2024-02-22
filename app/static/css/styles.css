@@ -177,7 +177,6 @@ h3 {
 .cell img {
     width: 100%; /* Ensure image covers the full width of the cell */
     height: 100%; /* Ensure image covers the full height of the cell */
-
     object-fit: fill; /* Cover the available cell space, cropping the image if necessary */
 }
 
@@ -204,7 +203,7 @@ h3 {
     margin: 2px;
     top: 48%;
     left: 10%;
-    transform: translate(50%, -50%); /* Center the stamp */
+    transform: translate(17%, -17%); /* Center the stamp */
     width: 60%; /* Scaled to fit within the cell, considering padding */
     height: auto; /* Maintain aspect ratio */
     z-index: 1;
